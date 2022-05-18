@@ -38,20 +38,20 @@ with mp_hands.Hands(
     results = asdHands.process(image)
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+    if my_list:
+      height, width, _ = image.shape
+      all_distance = calc_all_distance(height,width, my_list)
+      pred = rps(model.predict([all_distance])[0])
+      pos = (int(my_list[12][0]*height), int(my_list[12][1]*width))
+      pos2 = (int(my_list[12][0]*height), int(my_list[12][1]*width))
+      image = cv2.putText(image,pred,pos,font,2,(0,0,0),2)
     
     if results.multi_hand_landmarks:
       #for hand_landmarks in results.multi_hand_landmarks:
       for hand_no, hand_landmarks in enumerate(results.multi_hand_landmarks):
         mp_drawing.draw_landmarks(
             image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-
-        if my_list:
-          height, width, _ = image.shape
-          all_distance = calc_all_distance(height,width, my_list)
-          pred = rps(model.predict([all_distance])[0])
-          pos = (int(my_list[12][0]*height), int(my_list[12][1]*width))
-          pos2 = (int(my_list[12][0]*height), int(my_list[12][1]*width))
-          image = cv2.putText(image,pred,pos,font,2,(0,0,0),2)
           
     #currTime = time.time()
     #fps = 1 / (currTime - prevTime)
