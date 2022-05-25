@@ -15,6 +15,30 @@ def rps(num):
   elif num == 1: return 'ROCK'
   else: return 'SCISSOR'
 
+class mpHands:
+    import mediapipe as mp
+    def __init__(self,maxHands=2,tol1=.5,tol2=.5):
+        self.hands=self.mp.solutions.hands.Hands(False,maxHands,tol1,tol2)
+    def Marks(self,frame):
+        myHands=[]
+        handsType=[]
+        frameRGB=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        results=self.hands.process(frameRGB)
+        if results.multi_hand_landmarks != None:
+            #print(results.multi_handedness)
+            for hand in results.multi_handedness:
+                #print(hand)
+                #print(hand.classification)
+                #print(hand.classification[0])
+                handType=hand.classification[0].label
+                handsType.append(handType)
+            for handLandMarks in results.multi_hand_landmarks:
+                myHand=[]
+                for landMark in handLandMarks.landmark:
+                    myHand.append((int(landMark.x*width),int(landMark.y*height)))
+                myHands.append(myHand)
+        return myHands,handsType
+
 font = cv2.FONT_HERSHEY_PLAIN
 hands = hand_detection_module.HandDetector(max_hands = num_hand)
 model = pickle.load(open(model_name,'rb'))
@@ -30,7 +54,6 @@ with mp_hands.Hands(
     if not success:
       print("Ignoring empty camera frame.")
       continue
-  
     image, my_list = hands.find_hand_landmarks(cv2.flip(frame, 1),
                                                draw_landmarks=False)  
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -39,14 +62,14 @@ with mp_hands.Hands(
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-    if my_list:
+    for hand in my_list:
       height, width, _ = image.shape
-      all_distance = calc_all_distance(height,width, my_list)
+      all_distance = calc_all_distance(height,width, hand)
       pred = rps(model.predict([all_distance])[0])
-      pos = (int(my_list[12][0]*height), int(my_list[12][1]*width))
-      pos2 = (int(my_list[12][0]*height), int(my_list[12][1]*width))
+      pos = (int(hand[12][0]*height), int(hand[12][1]*width))
+      pos2 = (int(hand[12][0]*height), int(hand[12][1]*width))
       image = cv2.putText(image,pred,pos,font,2,(0,0,0),2)
-    
+
     if results.multi_hand_landmarks:
       #for hand_landmarks in results.multi_hand_landmarks:
       for hand_no, hand_landmarks in enumerate(results.multi_hand_landmarks):

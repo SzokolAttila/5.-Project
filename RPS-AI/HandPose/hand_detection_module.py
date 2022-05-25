@@ -1,3 +1,5 @@
+from re import X
+from urllib.request import AbstractHTTPHandler
 from cv2 import cv2
 import mediapipe as mp
 
@@ -19,6 +21,7 @@ class HandDetector:
 
   def find_hand_landmarks(self, image, draw_landmarks=False):
     landmark_list = []
+    landmark_lists = []
     img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     img.flags.writeable = False
     results = self.hands.process(img)
@@ -29,10 +32,13 @@ class HandDetector:
         if draw_landmarks:
           self.mp_drawing.draw_landmarks(img, hand_landmarks
                                          , self.mp_hands.HAND_CONNECTIONS)
-        for i in range(21):
+        for i in range(len(hand_landmarks.landmark)):
           per_point = [hand_landmarks.landmark[i].x,
-                       hand_landmarks.landmark[i].y,
-                       hand_landmarks.landmark[i].z]
+                      hand_landmarks.landmark[i].y,
+                      hand_landmarks.landmark[i].z]
           landmark_list.append(per_point)
-    return img, landmark_list
+          if len(landmark_list) == 21:
+            landmark_lists.append(landmark_list)
+            landmark_list = []
+    return img, landmark_lists
 
