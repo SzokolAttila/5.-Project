@@ -1,4 +1,4 @@
-﻿ZABkása-RPS használati útmutató:
+﻿ZABkása-RPS használati útmutató
 
 A program használatához szükséges:
  -webkamera -> helyettesthető telefonnal Iriun Webcam alkalmazással
