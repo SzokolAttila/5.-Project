@@ -1,7 +1,6 @@
 import mediapipe as mp
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
-import time
 from id_distance import calc_all_distance
 from cv2 import cv2
 import hand_detection_module
@@ -25,11 +24,7 @@ class mpHands:
         frameRGB=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
         results=self.hands.process(frameRGB)
         if results.multi_hand_landmarks != None:
-            #print(results.multi_handedness)
             for hand in results.multi_handedness:
-                #print(hand)
-                #print(hand.classification)
-                #print(hand.classification[0])
                 handType=hand.classification[0].label
                 handsType.append(handType)
             for handLandMarks in results.multi_hand_landmarks:
@@ -44,7 +39,6 @@ hands = hand_detection_module.HandDetector(max_hands = num_hand)
 model = pickle.load(open(model_name,'rb'))
 model2 = pickle.load(open(model_name,'rb'))
 cap = cv2.VideoCapture(0)
-#prevTime = 0
 with mp_hands.Hands(
     static_image_mode = False,
     min_detection_confidence=0.5,       
@@ -69,19 +63,7 @@ with mp_hands.Hands(
       pos = (int(hand[12][0]*height), int(hand[12][1]*width))
       pos2 = (int(hand[12][0]*height), int(hand[12][1]*width))
       image = cv2.putText(image,pred,pos,font,2,(0,0,0),2)
-
-    if results.multi_hand_landmarks:
-      #for hand_landmarks in results.multi_hand_landmarks:
-      for hand_no, hand_landmarks in enumerate(results.multi_hand_landmarks):
-        mp_drawing.draw_landmarks(
-            image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-          
-    #currTime = time.time()
-    #fps = 1 / (currTime - prevTime)
-    #prevTime = currTime
-    #cv2.putText(image, f'FPS: {int(fps)}', (20, 70), cv2.FONT_HERSHEY_PLAIN, 3, (0, 196, 255), 2)
-    cv2.imshow('MediaPipe Hands', image)
-    
     if cv2.waitKey(1) == ord('x'):
       break
+    cv2.imshow('MediaPipe Hands', image)
 cap.release()
