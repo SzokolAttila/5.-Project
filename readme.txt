@@ -12,6 +12,11 @@ A program használatához szükséges:
   -pip install keras
   -pip install tensorflow
   -pip install scikit-learn
-
+  
+  
+  Program használata:
+  -Hands.py elindítása
+  -Visszaszámlálás elindítása (c-betű)
+  -Program lezárása (x-betű)
 
  
