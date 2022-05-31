@@ -18,5 +18,3 @@ A program használatához szükséges:
   -Hands.py elindítása
   -Visszaszámlálás elindítása (c-betű)
   -Program lezárása (x-betű)
-
- 
